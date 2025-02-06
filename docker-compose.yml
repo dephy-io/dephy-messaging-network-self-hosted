@@ -8,8 +8,6 @@ services:
     volumes:
       - postgresql_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
-    ports:
-      - "5432:5432"
 
   pgbouncer:
     image: bitnami/pgbouncer:1.24.0
@@ -19,8 +17,6 @@ services:
       POSTGRESQL_USERNAME: dephy
       POSTGRESQL_PASSWORD: dephy
       PGBOUNCER_DATABASE: dephy_messaging_network
-    ports:
-      - "6432:5432"
 
   dephy-messaging-network:
     image: dephyio/dephy-messaging-network:master
@@ -29,7 +25,7 @@ services:
     environment:
       RUST_LOG: "info,dephy_messaging_network=debug"
       RUST_BACKTRACE: "1"
-    command: "serve --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network'"
+    command: "serve --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network' --api-addr '0.0.0.0:8000'"
     ports:
       - "8000:8000"
 
