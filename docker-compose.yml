@@ -27,7 +27,7 @@ services:
       RUST_BACKTRACE: "1"
     command: "serve --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network' --api-addr '0.0.0.0:8000'"
     ports:
-      - "8000:8000"
+      - "0.0.0.0:8000:8000"
 
 volumes:
   postgresql_data:
