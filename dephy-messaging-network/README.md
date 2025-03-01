@@ -1,6 +1,5 @@
 # Self-Hosted dephy-messaging-network
 
 ```bash
-docker compose up
+docker compose up -d --pull always
 ```
-
