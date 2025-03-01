@@ -18,7 +18,7 @@ services:
       RUST_BACKTRACE: "1"
     entrypoint: "/usr/bin/dephy-worker-registry-api"
     command: >
-      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
       --api-addr '0.0.0.0:8080'
       --worker-nostr-relay "${WORKER_NOSTR_RELAY:-ws://127.0.0.1:8000}"
       --key "${KEY}"
@@ -37,7 +37,7 @@ services:
       host.docker.internal: host-gateway
     command: >
       archive
-      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
       --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
       --key "${KEY}"
 
@@ -54,7 +54,7 @@ services:
     command: >
       ping
       --forever
-      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
       --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
       --key "${KEY}"
 
@@ -71,7 +71,7 @@ services:
     command: >
       check
       --forever
-      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
       --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
       --key "${KEY}"
 
