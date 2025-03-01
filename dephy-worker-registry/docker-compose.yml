@@ -9,25 +9,16 @@ services:
       - postgresql_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
 
-  pgbouncer:
-    image: bitnami/pgbouncer:1.24.0
-    depends_on:
-      - postgresql
-    environment:
-      POSTGRESQL_USERNAME: dephy
-      POSTGRESQL_PASSWORD: dephy
-      PGBOUNCER_DATABASE: dephy_worker_registry
-
   api:
     image: dephyio/dephy-worker:master
     depends_on:
-      - pgbouncer
+      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
     entrypoint: "/usr/bin/dephy-worker-registry-api"
     command: >
-      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
       --api-addr '0.0.0.0:8080'
       --worker-nostr-relay "${WORKER_NOSTR_RELAY:-ws://127.0.0.1:8000}"
       --key "${KEY}"
@@ -37,7 +28,7 @@ services:
   poo-archiver:
     image: dephyio/dephy-worker:master
     depends_on:
-      - pgbouncer
+      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
@@ -46,14 +37,14 @@ services:
       host.docker.internal: host-gateway
     command: >
       archive
-      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
       --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
       --key "${KEY}"
 
   poo-pinger:
     image: dephyio/dephy-worker:master
     depends_on:
-      - pgbouncer
+      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
@@ -63,14 +54,14 @@ services:
     command: >
       ping
       --forever
-      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
       --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
       --key "${KEY}"
 
   poo-checker:
     image: dephyio/dephy-worker:master
     depends_on:
-      - pgbouncer
+      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
@@ -80,7 +71,7 @@ services:
     command: >
       check
       --forever
-      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_worker_registry'
+      --pg-url 'postgresql://dephy:dephy@postgresql:6432/dephy_worker_registry'
       --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
       --key "${KEY}"
 
