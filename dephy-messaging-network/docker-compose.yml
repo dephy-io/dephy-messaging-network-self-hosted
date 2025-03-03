@@ -25,9 +25,32 @@ services:
     environment:
       RUST_LOG: "info,dephy_messaging_network=debug"
       RUST_BACKTRACE: "1"
-    command: "serve --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network' --api-addr '0.0.0.0:8000'"
+    command: >
+      serve
+      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network'
+      --api-addr '0.0.0.0:8000'
     ports:
       - "0.0.0.0:8000:8000"
+
+  prometheus-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    depends_on:
+      - postgresql
+    environment:
+      DATA_SOURCE_URI: "postgresql:5432/postgres?sslmode=disable"
+      DATA_SOURCE_USER: dephy
+      DATA_SOURCE_PASS: dephy
+    ports:
+      - "0.0.0.0:9187:9187"
+
+  prometheus-pgbouncer-exporter:
+    image: prometheuscommunity/pgbouncer-exporter:v0.10.2
+    depends_on:
+      - pgbouncer
+    environment:
+      PGBOUNCER_EXPORTER_CONNECTION_STRING: "postgres://dephy:dephy@pgbouncer:6432/pgbouncer?sslmode=disable"
+    ports:
+      - "0.0.0.0:9127:9127"
 
 volumes:
   postgresql_data:
