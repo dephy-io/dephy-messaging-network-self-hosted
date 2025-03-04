@@ -10,7 +10,7 @@ services:
       - ./migrations:/docker-entrypoint-initdb.d
 
   api:
-    image: dephyio/dephy-worker:master
+    image: dephyio/dephy-worker-registry:master
     depends_on:
       - postgresql
     environment:
@@ -26,7 +26,7 @@ services:
       - "0.0.0.0:8001:8001"
 
   poo-archiver:
-    image: dephyio/dephy-worker:master
+    image: dephyio/dephy-worker-registry:master
     depends_on:
       - postgresql
     environment:
@@ -42,7 +42,7 @@ services:
       --key "${KEY}"
 
   poo-pinger:
-    image: dephyio/dephy-worker:master
+    image: dephyio/dephy-worker-registry:master
     depends_on:
       - postgresql
     environment:
@@ -59,7 +59,7 @@ services:
       --key "${KEY}"
 
   poo-checker:
-    image: dephyio/dephy-worker:master
+    image: dephyio/dephy-worker-registry:master
     depends_on:
       - postgresql
     environment:
