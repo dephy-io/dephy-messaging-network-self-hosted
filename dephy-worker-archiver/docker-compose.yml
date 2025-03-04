@@ -17,12 +17,10 @@ services:
       RUST_LOG: "info,dephy-worker-registry=debug"
       RUST_BACKTRACE: "1"
     entrypoint: "/usr/bin/dephy-worker-registry-poo"
-    extra_hosts:
-      host.docker.internal: host-gateway
     command: >
       archive
       --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_archiver'
-      --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
+      --nostr-relay "${NOSTR_RELAY}"
       --pubkey "${REGISTRY_PUBKEY}"
 
 volumes:
