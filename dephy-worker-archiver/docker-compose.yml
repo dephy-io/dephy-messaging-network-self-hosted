@@ -1,0 +1,29 @@
+services:
+  postgresql:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dephy
+      POSTGRES_PASSWORD: dephy
+      POSTGRES_DB: dephy_worker_archiver
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+
+  poo-archiver:
+    image: dephyio/dephy-worker-registry:master
+    depends_on:
+      - postgresql
+    environment:
+      RUST_LOG: "info,dephy-worker-registry=debug"
+      RUST_BACKTRACE: "1"
+    entrypoint: "/usr/bin/dephy-worker-registry-poo"
+    extra_hosts:
+      host.docker.internal: host-gateway
+    command: >
+      archive
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_archiver'
+      --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
+      --pubkey "${REGISTRY_PUBKEY}"
+
+volumes:
+  postgresql_data:
