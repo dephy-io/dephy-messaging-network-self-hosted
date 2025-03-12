@@ -1,6 +1,7 @@
 services:
   postgresql:
     image: postgres:16
+    restart: always
     environment:
       POSTGRES_USER: dephy
       POSTGRES_PASSWORD: dephy
@@ -11,6 +12,7 @@ services:
 
   api:
     image: dephyio/dephy-worker-registry:master
+    restart: always
     depends_on:
       - postgresql
     environment:
@@ -27,6 +29,7 @@ services:
 
   poo-archiver:
     image: dephyio/dephy-worker-registry:master
+    restart: always
     depends_on:
       - postgresql
     environment:
@@ -43,6 +46,7 @@ services:
 
   poo-pinger:
     image: dephyio/dephy-worker-registry:master
+    restart: always
     depends_on:
       - postgresql
     environment:
@@ -60,6 +64,7 @@ services:
 
   poo-checker:
     image: dephyio/dephy-worker-registry:master
+    restart: always
     depends_on:
       - postgresql
     environment:

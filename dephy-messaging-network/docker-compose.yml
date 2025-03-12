@@ -1,6 +1,7 @@
 services:
   postgresql:
     image: postgres:16
+    restart: always
     environment:
       POSTGRES_USER: dephy
       POSTGRES_PASSWORD: dephy
@@ -11,6 +12,7 @@ services:
 
   pgbouncer:
     image: bitnami/pgbouncer:1.24.0
+    restart: always
     depends_on:
       - postgresql
     environment:
@@ -20,6 +22,7 @@ services:
 
   dephy-messaging-network:
     image: dephyio/dephy-messaging-network:master
+    restart: always
     depends_on:
       - pgbouncer
     environment:
@@ -34,6 +37,7 @@ services:
 
   prometheus-postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.17.1
+    restart: always
     depends_on:
       - postgresql
     environment:
@@ -45,6 +49,7 @@ services:
 
   prometheus-pgbouncer-exporter:
     image: prometheuscommunity/pgbouncer-exporter:v0.10.2
+    restart: always
     depends_on:
       - pgbouncer
     environment:
