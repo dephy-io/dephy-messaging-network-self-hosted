@@ -10,7 +10,17 @@ services:
       - postgresql_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
 
-  pgbouncer:
+  default-pgbouncer:
+    image: bitnami/pgbouncer:1.24.0
+    restart: always
+    depends_on:
+      - postgresql
+    environment:
+      POSTGRESQL_USERNAME: dephy
+      POSTGRESQL_PASSWORD: dephy
+      PGBOUNCER_DATABASE: dephy_messaging_network
+
+  publisher-pgbouncer:
     image: bitnami/pgbouncer:1.24.0
     restart: always
     depends_on:
@@ -24,13 +34,15 @@ services:
     image: dephyio/dephy-messaging-network:master
     restart: always
     depends_on:
-      - pgbouncer
+      - default-pgbouncer
+      - publisher-pgbouncer
     environment:
       RUST_LOG: "info,dephy_messaging_network=debug"
       RUST_BACKTRACE: "1"
     command: >
       serve
-      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network'
+      --pg-url 'postgresql://dephy:dephy@default-pgbouncer:6432/dephy_messaging_network'
+      --publisher-pg-url 'postgresql://dephy:dephy@publisher-pgbouncer:6432/dephy_messaging_network'
       --api-addr '0.0.0.0:8000'
     ports:
       - "0.0.0.0:8000:8000"
@@ -51,9 +63,9 @@ services:
     image: prometheuscommunity/pgbouncer-exporter:v0.10.2
     restart: always
     depends_on:
-      - pgbouncer
+      - default-pgbouncer
     environment:
-      PGBOUNCER_EXPORTER_CONNECTION_STRING: "postgres://dephy:dephy@pgbouncer:6432/pgbouncer?sslmode=disable"
+      PGBOUNCER_EXPORTER_CONNECTION_STRING: "postgres://dephy:dephy@default-pgbouncer:6432/pgbouncer?sslmode=disable"
     ports:
       - "0.0.0.0:9127:9127"
 
