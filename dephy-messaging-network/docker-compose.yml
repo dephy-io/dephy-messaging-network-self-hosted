@@ -6,6 +6,10 @@ services:
       POSTGRES_USER: dephy
       POSTGRES_PASSWORD: dephy
       POSTGRES_DB: dephy_messaging_network
+    shm_size: ${POSTGRESQL_SHM_SIZE:-128mb}
+    command: >
+      -c shared_buffers=${POSTGRESQL_SHARED_BUFFERS:256MB}
+      -c max_connections=${POSTGRESQL_MAX_CONNECTIONS:-100}
     volumes:
       - postgresql_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
