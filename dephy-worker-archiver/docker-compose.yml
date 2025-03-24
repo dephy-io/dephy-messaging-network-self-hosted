@@ -21,11 +21,11 @@ services:
     entrypoint: "/usr/bin/dephy-worker-registry-api"
     command: >
       --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
-      --api-addr '0.0.0.0:9000'
+      --api-addr '0.0.0.0:9001'
       --worker-nostr-relay "${NOSTR_RELAY}"
       --pubkey "${REGISTRY_PUBKEY}"
     ports:
-      - "0.0.0.0:9000:9000"
+      - "0.0.0.0:9001:9001"
 
   poo-archiver:
     image: dephyio/dephy-worker-registry:master
