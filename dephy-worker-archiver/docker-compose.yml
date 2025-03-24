@@ -10,6 +10,23 @@ services:
       - postgresql_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
 
+  api:
+    image: dephyio/dephy-worker-registry:master
+    restart: always
+    depends_on:
+      - postgresql
+    environment:
+      RUST_LOG: "info,dephy_worker_registry=debug"
+      RUST_BACKTRACE: "1"
+    entrypoint: "/usr/bin/dephy-worker-registry-api"
+    command: >
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
+      --api-addr '0.0.0.0:9000'
+      --worker-nostr-relay "${NOSTR_RELAY}"
+      --pubkey "${REGISTRY_PUBKEY}"
+    ports:
+      - "0.0.0.0:9000:9000"
+
   poo-archiver:
     image: dephyio/dephy-worker-registry:master
     restart: always
