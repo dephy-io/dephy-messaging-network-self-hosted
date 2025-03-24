@@ -14,75 +14,22 @@ services:
       - postgresql_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
 
-  default-pgbouncer:
-    image: bitnami/pgbouncer:1.24.0
-    restart: always
-    depends_on:
-      - postgresql
-    environment:
-      POSTGRESQL_HOST: postgresql
-      POSTGRESQL_USERNAME: dephy
-      POSTGRESQL_PASSWORD: dephy
-      PGBOUNCER_DATABASE: dephy_messaging_network
-      PGBOUNCER_MAX_CLIENT_CONN: ${PGBOUNCER_MAX_CLIENT_CONN:-120}
-      PGBOUNCER_DEFAULT_POOL_SIZE: ${PGBOUNCER_DEFAULT_POOL_SIZE:-20}
-      PGBOUNCER_RESERVE_POOL_SIZE: ${PGBOUNCER_RESERVE_POOL_SIZE:-0}
-      PGBOUNCER_RESERVE_POOL_TIMEOUT: ${PGBOUNCER_RESERVE_POOL_TIMEOUT:-5}
-      PGBOUNCER_SERVER_IDLE_TIMEOUT: ${PGBOUNCER_SERVER_IDLE_TIMEOUT:-600}
-      PGBOUNCER_SERVER_CONNECT_TIMEOUT: ${PGBOUNCER_SERVER_CONNECT_TIMEOUT:-15}
-      PGBOUNCER_POOL_MODE: transaction
-
-  publisher-pgbouncer:
-    image: bitnami/pgbouncer:1.24.0
-    restart: always
-    depends_on:
-      - postgresql
-    environment:
-      POSTGRESQL_HOST: postgresql
-      POSTGRESQL_USERNAME: dephy
-      POSTGRESQL_PASSWORD: dephy
-      PGBOUNCER_DATABASE: dephy_messaging_network
-
   dephy-messaging-network:
     image: dephyio/dephy-messaging-network:master
     restart: always
     depends_on:
-      - default-pgbouncer
-      - publisher-pgbouncer
+      - postgresql
     environment:
       RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network=info}
       RUST_BACKTRACE: "1"
     command: >
       serve
-      --pg-url 'postgresql://dephy:dephy@default-pgbouncer:6432/dephy_messaging_network'
-      --publisher-pg-url 'postgresql://dephy:dephy@publisher-pgbouncer:6432/dephy_messaging_network'
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_messaging_network'
       --db-max-write-connections "${DB_MAX_WRITE_CONNECTIONS:-10}"
       --db-max-read-connections "${DB_MAX_READ_CONNECTIONS:-10}"
       --api-addr '0.0.0.0:8000'
     ports:
       - "0.0.0.0:8000:8000"
-
-  prometheus-postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.17.1
-    restart: always
-    depends_on:
-      - postgresql
-    environment:
-      DATA_SOURCE_URI: "postgresql:5432/postgres?sslmode=disable"
-      DATA_SOURCE_USER: dephy
-      DATA_SOURCE_PASS: dephy
-    ports:
-      - "0.0.0.0:9187:9187"
-
-  prometheus-pgbouncer-exporter:
-    image: prometheuscommunity/pgbouncer-exporter:v0.10.2
-    restart: always
-    depends_on:
-      - default-pgbouncer
-    environment:
-      PGBOUNCER_EXPORTER_CONNECTION_STRING: "postgres://dephy:dephy@default-pgbouncer:6432/pgbouncer?sslmode=disable"
-    ports:
-      - "0.0.0.0:9127:9127"
 
 volumes:
   postgresql_data:
