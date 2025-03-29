@@ -68,9 +68,11 @@ services:
     depends_on:
       - postgresql
     environment:
-      DATA_SOURCE_URI: "postgresql:5432/postgres?sslmode=disable"
+      DATA_SOURCE_URI: "postgresql:5432/dephy_messaging_network?sslmode=disable"
       DATA_SOURCE_USER: dephy
       DATA_SOURCE_PASS: dephy
+    command:
+      - '--collector.stat_statements'
     ports:
       - "0.0.0.0:9187:9187"
 
