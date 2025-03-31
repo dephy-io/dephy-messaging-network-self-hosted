@@ -1,0 +1,12 @@
+apiVersion: 1
+
+# Mark provisioned data sources for deletion if they are no longer in a provisioning file.
+prune: true
+
+datasources:
+  - name: prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    uid: begvsvucfjrb4c
+    url: http://prometheus:9090
