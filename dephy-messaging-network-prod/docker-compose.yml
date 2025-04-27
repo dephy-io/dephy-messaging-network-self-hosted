@@ -43,6 +43,21 @@ services:
       POSTGRESQL_PASSWORD: dephy
       PGBOUNCER_DATABASE: dephy_messaging_network
 
+  dephy-messaging-network-auth:
+    image: dephyio/dephy-messaging-network-auth:master
+    restart: always
+    environment:
+      RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network_auth=info}
+      RUST_BACKTRACE: "1"
+    command: >
+      serve
+      --config /opt/dephy-messaging-network-auth/config.yml
+      --api-addr 0.0.0.0:8100
+    ports:
+      - "0.0.0.0:8100:8100"
+    volumes:
+      - ${AUTH_CONFIG_FILE:-./auth-config.yml}:/opt/dephy-messaging-network-auth/config.yml
+
   dephy-messaging-network:
     image: dephyio/dephy-messaging-network:master
     restart: always
@@ -59,6 +74,7 @@ services:
       --db-max-write-connections "${DB_MAX_WRITE_CONNECTIONS:-10}"
       --db-max-read-connections "${DB_MAX_READ_CONNECTIONS:-10}"
       --api-addr '0.0.0.0:8000'
+      --auth-service-url 'http://dephy-messaging-network-auth:8100'
     ports:
       - "0.0.0.0:8000:8000"
 
