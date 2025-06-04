@@ -15,7 +15,7 @@ services:
       - ./migrations:/docker-entrypoint-initdb.d
 
   dephy-messaging-network:
-    image: dephyio/dephy-messaging-network:master
+    image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - postgresql

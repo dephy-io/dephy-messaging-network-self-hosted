@@ -11,7 +11,7 @@ services:
       - ./migrations:/docker-entrypoint-initdb.d
 
   api:
-    image: dephyio/dephy-worker-registry:master
+    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - postgresql
@@ -28,7 +28,7 @@ services:
       - "0.0.0.0:9001:9001"
 
   poo-archiver:
-    image: dephyio/dephy-worker-registry:master
+    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - postgresql

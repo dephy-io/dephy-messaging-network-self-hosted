@@ -44,7 +44,7 @@ services:
       PGBOUNCER_DATABASE: dephy_messaging_network
 
   dephy-messaging-network-auth:
-    image: dephyio/dephy-messaging-network-auth:master
+    image: dephyio/dephy-messaging-network-auth:${DEPHY_IMAGE_TAG:-latest}
     restart: always
     environment:
       RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network_auth=info}
@@ -59,7 +59,7 @@ services:
       - ${AUTH_CONFIG_FILE:-./auth-config.yml}:/opt/dephy-messaging-network-auth/config.yml
 
   dephy-messaging-network:
-    image: dephyio/dephy-messaging-network:master
+    image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}
     restart: always
     depends_on:
       - default-pgbouncer
