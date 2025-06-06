@@ -28,6 +28,7 @@ services:
       --db-max-write-connections "${DB_MAX_WRITE_CONNECTIONS:-10}"
       --db-max-read-connections "${DB_MAX_READ_CONNECTIONS:-10}"
       --api-addr '0.0.0.0:8000'
+      --key "${KEY}"
     ports:
       - "0.0.0.0:8000:8000"
 

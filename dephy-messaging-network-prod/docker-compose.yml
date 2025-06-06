@@ -75,6 +75,7 @@ services:
       --db-max-read-connections "${DB_MAX_READ_CONNECTIONS:-10}"
       --api-addr '0.0.0.0:8000'
       --auth-service-url 'http://dephy-messaging-network-auth:8100'
+      --key "${KEY}"
     ports:
       - "0.0.0.0:8000:8000"
 
