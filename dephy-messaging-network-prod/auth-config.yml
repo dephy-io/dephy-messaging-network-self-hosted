@@ -7,9 +7,20 @@ global:
     # ttl: 300 # The ttl field is optional and defaults to 300 seconds
 
 # Each entry defines a pubkey with read/write permissions, the ttl field is optional
-# To enable whitelist mode, set the global permissions to false and add accessible permissions below
+# To enable whitelist mode, set the global permissions to false and add permissions below
 permissions:
-  - pubkey: "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+#   - pubkey: "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+#     read: true
+#     write: true
+#     ttl: 3600
+
+source:
+  # Same to the permission config of global, but will only enable to the pubkeys from source
+  permission:
     read: true
     write: true
-    ttl: 3600
+
+  # Use this to fetch permissions from dephy-id-v2
+  # solana_metaplex_core:
+  #   rpc_api_url: "https://devnet.helius-rpc.com/?api-key=<your api key>"
+  #   collection: AuQQyAYi7SAfXbGxTLHS5TnAGo996jUrspN2nNSXXRnG
