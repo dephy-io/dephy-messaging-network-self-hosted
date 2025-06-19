@@ -1,5 +1,5 @@
-# Self-Hosted dephy-messaging-network
+# Self-Hosted dephy-messaging-network-prod
 
 ```bash
-docker compose up -d --pull always
+KEY="NOSTR KEY" docker compose up -d --pull always
 ```
