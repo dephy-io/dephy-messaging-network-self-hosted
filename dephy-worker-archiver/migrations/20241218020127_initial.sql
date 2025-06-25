@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS workers (
     id bigserial PRIMARY KEY,
     pubkey character varying NOT NULL,
-    "owner" character varying NOT NULL,
     uptime bigint NOT NULL,
     status integer NOT NULL,
     created_at bigint NOT NULL,
