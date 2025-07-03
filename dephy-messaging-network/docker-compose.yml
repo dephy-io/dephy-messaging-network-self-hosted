@@ -22,6 +22,7 @@ services:
     environment:
       RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network=info}
       RUST_BACKTRACE: "1"
+      SENTRY_DSN: ${SENTRY_DSN}
     command: >
       serve
       --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_messaging_network'

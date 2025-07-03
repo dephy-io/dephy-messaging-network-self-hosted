@@ -18,6 +18,7 @@ services:
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
+      SENTRY_DSN: ${SENTRY_DSN}
     entrypoint: "/usr/bin/dephy-worker-registry-api"
     command: >
       --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_archiver'
@@ -35,6 +36,7 @@ services:
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
+      SENTRY_DSN: ${SENTRY_DSN}
     entrypoint: "/usr/bin/dephy-worker-registry-poo"
     command: >
       archive
