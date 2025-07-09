@@ -44,66 +44,37 @@ services:
       PGBOUNCER_DATABASE: dephy_messaging_network
 
   dephy-messaging-network-auth:
-    image: dephyio/dephy-messaging-network-auth:${DEPHY_IMAGE_TAG:-latest}
-    restart: always
-    environment:
-      RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network_auth=info}
-      RUST_BACKTRACE: "1"
-      SENTRY_DSN: ${SENTRY_DSN}
-    command: >
-      serve
-      --config /opt/dephy-messaging-network-auth/config.yml
-      --api-addr 0.0.0.0:8100
-    ports:
-      - "0.0.0.0:8100:8100"
-    volumes:
-      - ${AUTH_CONFIG_FILE:-./auth-config.yml}:/opt/dephy-messaging-network-auth/config.yml
+    extends:
+      file: components.yml
+      service: dephy-messaging-network-auth
 
   dephy-messaging-network:
-    image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}
-    restart: always
+    extends:
+      file: components.yml
+      service: dephy-messaging-network
     depends_on:
       - default-pgbouncer
       - publisher-pgbouncer
-    environment:
-      RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network=info}
-      RUST_BACKTRACE: "1"
-      SENTRY_DSN: ${SENTRY_DSN}
     command: >
       serve
       --pg-url 'postgresql://dephy:dephy@default-pgbouncer:6432/dephy_messaging_network'
       --publisher-pg-url 'postgresql://dephy:dephy@publisher-pgbouncer:6432/dephy_messaging_network'
-      --db-max-write-connections "${DB_MAX_WRITE_CONNECTIONS:-10}"
-      --db-max-read-connections "${DB_MAX_READ_CONNECTIONS:-10}"
+      --db-max-write-connections "${DEPHY_MN_DB_MAX_WRITE_CONNECTIONS:-10}"
+      --db-max-read-connections "${DEPHY_MN_DB_MAX_READ_CONNECTIONS:-10}"
       --api-addr '0.0.0.0:8000'
       --auth-service-url 'http://dephy-messaging-network-auth:8100'
-      --key "${KEY}"
-    ports:
-      - "0.0.0.0:8000:8000"
+      --key "${DEPHY_MN_KEY}"
 
   prometheus-postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.17.1
-    restart: always
+    extends:
+      file: components.yml
+      service: prometheus-postgres-exporter
     depends_on:
       - postgresql
     environment:
       DATA_SOURCE_URI: "postgresql:5432/dephy_messaging_network?sslmode=disable"
       DATA_SOURCE_USER: dephy
       DATA_SOURCE_PASS: dephy
-    command:
-      - "--collector.stat_statements"
-    ports:
-      - "0.0.0.0:9187:9187"
-
-  prometheus-pgbouncer-exporter:
-    image: prometheuscommunity/pgbouncer-exporter:v0.10.2
-    restart: always
-    depends_on:
-      - default-pgbouncer
-    environment:
-      PGBOUNCER_EXPORTER_CONNECTION_STRING: "postgres://dephy:dephy@default-pgbouncer:6432/pgbouncer?sslmode=disable"
-    ports:
-      - "0.0.0.0:9127:9127"
 
 volumes:
   postgresql_data:

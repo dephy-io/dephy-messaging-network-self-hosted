@@ -1,0 +1,27 @@
+services:
+  dephy-messaging-network-auth:
+    extends:
+      file: components.yml
+      service: dephy-messaging-network-auth
+
+  dephy-messaging-network:
+    extends:
+      file: components.yml
+      service: dephy-messaging-network
+    command: >
+      serve
+      --pg-url '${DEPHY_MN_PG_URL}'
+      --db-max-write-connections "${DEPHY_MN_DB_MAX_WRITE_CONNECTIONS:-10}"
+      --db-max-read-connections "${DEPHY_MN_DB_MAX_READ_CONNECTIONS:-10}"
+      --api-addr '0.0.0.0:8000'
+      --auth-service-url 'http://dephy-messaging-network-auth:8100'
+      --key "${DEPHY_MN_KEY}"
+
+  prometheus-postgres-exporter:
+    extends:
+      file: components.yml
+      service: prometheus-postgres-exporter
+    environment:
+      DATA_SOURCE_URI: "${PROMETHEUS_POSTGRES_EXPORTER_DATA_SOURCE_URI}"
+      DATA_SOURCE_USER: "${PROMETHEUS_POSTGRES_EXPORTER_DATA_SOURCE_USER}"
+      DATA_SOURCE_PASS: "${PROMETHEUS_POSTGRES_EXPORTER_DATA_SOURCE_PASS}"
