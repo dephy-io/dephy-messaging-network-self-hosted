@@ -1,0 +1,42 @@
+services:
+  api:
+    extends:
+      file: components.yml
+      service: api
+    command: >
+      --pg-url '${DEPHY_WR_PG_URL}'
+      --api-addr '0.0.0.0:9000'
+      --worker-nostr-relay "${DEPHY_WR_WORKER_NOSTR_RELAY:-ws://127.0.0.1:8000}"
+      --key "${DEPHY_WR_KEY}"
+
+  poo-archiver:
+    extends:
+      file: components.yml
+      service: poo-archiver
+    command: >
+      archive
+      --pg-url '${DEPHY_WR_PG_URL}'
+      --nostr-relay "${DEPHY_WR_NOSTR_RELAY:-ws://host.docker.internal:8000}"
+      --key "${DEPHY_WR_KEY}"
+
+  poo-pinger:
+    extends:
+      file: components.yml
+      service: poo-pinger
+    command: >
+      ping
+      --forever
+      --pg-url '${DEPHY_WR_PG_URL}'
+      --nostr-relay "${DEPHY_WR_NOSTR_RELAY:-ws://host.docker.internal:8000}"
+      --key "${DEPHY_WR_KEY}"
+
+  poo-checker:
+    extends:
+      file: components.yml
+      service: poo-checker
+    command: >
+      check
+      --forever
+      --pg-url '${DEPHY_WR_PG_URL}'
+      --nostr-relay "${DEPHY_WR_NOSTR_RELAY:-ws://host.docker.internal:8000}"
+      --key "${DEPHY_WR_KEY}"

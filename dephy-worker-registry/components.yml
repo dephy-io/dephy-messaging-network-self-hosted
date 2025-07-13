@@ -1,38 +1,18 @@
 services:
-  postgresql:
-    image: postgres:16
-    restart: always
-    environment:
-      POSTGRES_USER: dephy
-      POSTGRES_PASSWORD: dephy
-      POSTGRES_DB: dephy_worker_registry
-    volumes:
-      - postgresql_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
-
   api:
     image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
     restart: always
-    depends_on:
-      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
       SENTRY_DSN: ${SENTRY_DSN}
     entrypoint: "/usr/bin/dephy-worker-registry-api"
-    command: >
-      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
-      --api-addr '0.0.0.0:9000'
-      --worker-nostr-relay "${WORKER_NOSTR_RELAY:-ws://127.0.0.1:8000}"
-      --key "${KEY}"
     ports:
       - "0.0.0.0:9000:9000"
 
   poo-archiver:
     image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
     restart: always
-    depends_on:
-      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
@@ -40,17 +20,10 @@ services:
     entrypoint: "/usr/bin/dephy-worker-registry-poo"
     extra_hosts:
       host.docker.internal: host-gateway
-    command: >
-      archive
-      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
-      --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
-      --key "${KEY}"
 
   poo-pinger:
     image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
     restart: always
-    depends_on:
-      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
@@ -58,12 +31,6 @@ services:
     entrypoint: "/usr/bin/dephy-worker-registry-poo"
     extra_hosts:
       host.docker.internal: host-gateway
-    command: >
-      ping
-      --forever
-      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
-      --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
-      --key "${KEY}"
 
   poo-checker:
     image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
@@ -77,12 +44,3 @@ services:
     entrypoint: "/usr/bin/dephy-worker-registry-poo"
     extra_hosts:
       host.docker.internal: host-gateway
-    command: >
-      check
-      --forever
-      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
-      --nostr-relay "${NOSTR_RELAY:-ws://host.docker.internal:8000}"
-      --key "${KEY}"
-
-volumes:
-  postgresql_data:
