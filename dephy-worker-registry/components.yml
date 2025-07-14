@@ -35,8 +35,6 @@ services:
   poo-checker:
     image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
     restart: always
-    depends_on:
-      - postgresql
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
