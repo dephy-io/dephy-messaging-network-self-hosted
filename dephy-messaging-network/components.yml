@@ -13,7 +13,7 @@ services:
     ports:
       - "0.0.0.0:8100:8100"
     volumes:
-      - ${AUTH_CONFIG_FILE:-./auth-config.yml}:/opt/dephy-messaging-network-auth/config.yml
+      - ${DEPHY_MN_AUTH_CONFIG_FILE:-./auth-config.yml}:/opt/dephy-messaging-network-auth/config.yml
 
   dephy-messaging-network:
     image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}
