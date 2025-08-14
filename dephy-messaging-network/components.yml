@@ -25,6 +25,14 @@ services:
     ports:
       - "0.0.0.0:8000:8000"
 
+  dephy-messaging-network-cleanup:
+    image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network=info}
+      RUST_BACKTRACE: "1"
+      SENTRY_DSN: ${SENTRY_DSN}
+
   prometheus-postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.17.1
     restart: always

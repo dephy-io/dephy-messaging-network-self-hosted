@@ -17,6 +17,14 @@ services:
       --auth-service-url 'http://dephy-messaging-network-auth:8100'
       --key "${DEPHY_MN_KEY}"
 
+  dephy-messaging-network-cleanup:
+    extends:
+      file: components.yml
+      service: dephy-messaging-network-cleanup
+    command: >
+      cleanup
+      --pg-url '${DEPHY_MN_PG_URL}'
+
   prometheus-postgres-exporter:
     extends:
       file: components.yml
