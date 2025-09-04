@@ -1,20 +1,4 @@
 services:
-  dephy-messaging-network-auth:
-    image: dephyio/dephy-messaging-network-auth:${DEPHY_IMAGE_TAG:-latest}
-    restart: always
-    environment:
-      RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network_auth=info}
-      RUST_BACKTRACE: "1"
-      SENTRY_DSN: ${SENTRY_DSN}
-    command: >
-      serve
-      --config /opt/dephy-messaging-network-auth/config.yml
-      --api-addr 0.0.0.0:8100
-    ports:
-      - "0.0.0.0:8100:8100"
-    volumes:
-      - ${DEPHY_MN_AUTH_CONFIG_FILE:-./auth-config.yml}:/opt/dephy-messaging-network-auth/config.yml
-
   dephy-messaging-network:
     image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}
     restart: always
@@ -24,6 +8,8 @@ services:
       SENTRY_DSN: ${SENTRY_DSN}
     ports:
       - "0.0.0.0:8000:8000"
+    extra_hosts:
+      host.docker.internal: host-gateway
 
   dephy-messaging-network-cleanup:
     image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}

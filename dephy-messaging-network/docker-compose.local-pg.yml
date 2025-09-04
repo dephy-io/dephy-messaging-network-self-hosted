@@ -43,11 +43,6 @@ services:
       POSTGRESQL_PASSWORD: dephy
       PGBOUNCER_DATABASE: dephy_messaging_network
 
-  dephy-messaging-network-auth:
-    extends:
-      file: components.yml
-      service: dephy-messaging-network-auth
-
   dephy-messaging-network:
     extends:
       file: components.yml
@@ -55,15 +50,18 @@ services:
     depends_on:
       - default-pgbouncer
       - publisher-pgbouncer
+    entrypoint: []
     command: >
-      serve
+      sh -c "
+      /usr/bin/dephy-messaging-network serve
       --pg-url 'postgresql://dephy:dephy@default-pgbouncer:6432/dephy_messaging_network'
       --publisher-pg-url 'postgresql://dephy:dephy@publisher-pgbouncer:6432/dephy_messaging_network'
-      --db-max-write-connections "${DEPHY_MN_DB_MAX_WRITE_CONNECTIONS:-10}"
-      --db-max-read-connections "${DEPHY_MN_DB_MAX_READ_CONNECTIONS:-10}"
+      --db-max-write-connections \"${DEPHY_MN_DB_MAX_WRITE_CONNECTIONS:-10}\"
+      --db-max-read-connections \"${DEPHY_MN_DB_MAX_READ_CONNECTIONS:-10}\"
       --api-addr '0.0.0.0:8000'
-      --auth-service-url 'http://dephy-messaging-network-auth:8100'
-      --key "${DEPHY_MN_KEY}"
+      $${DEPHY_MN_AUTH_SERVICE_URL:+--auth-service-url \"$DEPHY_MN_AUTH_SERVICE_URL\"}
+      --key \"${DEPHY_MN_KEY}\"
+      "
 
   dephy-messaging-network-cleanup:
     extends:
