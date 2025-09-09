@@ -4,6 +4,7 @@ services:
     restart: always
     environment:
       RUST_LOG: ${ENV_RUST_LOG:-info,dephy_messaging_network=info}
+      DEPHY_MN_AUTH_SERVICE_URL: ${DEPHY_MN_AUTH_SERVICE_URL}
       RUST_BACKTRACE: "1"
       SENTRY_DSN: ${SENTRY_DSN}
     ports:
