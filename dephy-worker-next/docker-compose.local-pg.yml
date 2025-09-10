@@ -1,0 +1,26 @@
+services:
+  postgresql:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: dephy
+      POSTGRES_PASSWORD: dephy
+      POSTGRES_DB: dephy_worker_registry
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+
+  api:
+    extends:
+      file: components.yml
+      service: api
+    depends_on:
+      - postgresql
+    command: >
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
+      --api-addr '0.0.0.0:9000'
+      --worker-nostr-relay "${DEPHY_WR_WORKER_NOSTR_RELAY:-ws://127.0.0.1:8000}"
+      --key "${DEPHY_WR_KEY}"
+
+volumes:
+  postgresql_data:

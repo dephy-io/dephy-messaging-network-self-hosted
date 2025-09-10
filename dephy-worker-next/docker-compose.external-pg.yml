@@ -1,0 +1,10 @@
+services:
+  api:
+    extends:
+      file: components.yml
+      service: api
+    command: >
+      --pg-url '${DEPHY_WR_PG_URL}'
+      --api-addr '0.0.0.0:9000'
+      --worker-nostr-relay "${DEPHY_WR_WORKER_NOSTR_RELAY:-ws://127.0.0.1:8000}"
+      --key "${DEPHY_WR_KEY}"
