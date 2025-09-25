@@ -3,11 +3,9 @@
 global:
   permission:
     read:
-      mode: Allow
-      topics: []
+      mode: AllowAll
     write:
-      mode: Allow
-      topics: []
+      mode: AllowAll
 
     # ttl: 300 # The ttl field is optional and defaults to 300 seconds
 
@@ -25,11 +23,9 @@ source:
   # Same to the permission config of global, but will only enable to the pubkeys from source
   permission:
     read:
-      mode: Allow
-      topics: []
+      mode: AllowAll
     write:
-      mode: Allow
-      topics: []
+      mode: AllowAll
 
   # Use this to fetch permissions from dephy-id-v2
   # solana_metaplex_core:
