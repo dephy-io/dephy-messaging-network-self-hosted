@@ -14,8 +14,8 @@ services:
       - postgresql_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
 
-  default-pgbouncer:
-    image: bitnami/pgbouncer:1.24.0
+  pgbouncer:
+    image: bitnamilegacy/pgbouncer:1.24.0
     restart: always
     depends_on:
       - postgresql
@@ -32,30 +32,18 @@ services:
       PGBOUNCER_SERVER_CONNECT_TIMEOUT: ${PGBOUNCER_SERVER_CONNECT_TIMEOUT:-15}
       PGBOUNCER_POOL_MODE: transaction
 
-  publisher-pgbouncer:
-    image: bitnami/pgbouncer:1.24.0
-    restart: always
-    depends_on:
-      - postgresql
-    environment:
-      POSTGRESQL_HOST: postgresql
-      POSTGRESQL_USERNAME: dephy
-      POSTGRESQL_PASSWORD: dephy
-      PGBOUNCER_DATABASE: dephy_messaging_network
-
   dephy-messaging-network:
     extends:
       file: components.yml
       service: dephy-messaging-network
     depends_on:
-      - default-pgbouncer
-      - publisher-pgbouncer
+      - pgbouncer
     entrypoint: []
     command: >
       sh -c "
       /usr/bin/dephy-messaging-network serve
-      --pg-url 'postgresql://dephy:dephy@default-pgbouncer:6432/dephy_messaging_network'
-      --publisher-pg-url 'postgresql://dephy:dephy@publisher-pgbouncer:6432/dephy_messaging_network'
+      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network'
+      --publisher-pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network'
       --db-max-write-connections \"${DEPHY_MN_DB_MAX_WRITE_CONNECTIONS:-10}\"
       --db-max-read-connections \"${DEPHY_MN_DB_MAX_READ_CONNECTIONS:-10}\"
       --api-addr '0.0.0.0:8000'
@@ -68,10 +56,10 @@ services:
       file: components.yml
       service: dephy-messaging-network-cleanup
     depends_on:
-      - default-pgbouncer
+      - pgbouncer
     command: >
       cleanup
-      --pg-url 'postgresql://dephy:dephy@default-pgbouncer:6432/dephy_messaging_network'
+      --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network'
 
   prometheus-postgres-exporter:
     extends:
