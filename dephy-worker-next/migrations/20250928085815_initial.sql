@@ -7,8 +7,7 @@ CREATE TABLE IF NOT EXISTS workers (
     updated_at bigint NOT NULL,
     ping_loop_pinged boolean NOT NULL,
     "version" character varying NOT NULL,
-    backend character varying NOT NULL,
-    topic character varying NOT NULL,
+    backends jsonb NOT NULL,
 
     CONSTRAINT workers_unique_pubkey UNIQUE (pubkey)
 );
@@ -19,6 +18,7 @@ CREATE TABLE IF NOT EXISTS worker_tasks (
     status integer NOT NULL,
     expires_at bigint NOT NULL,
     request_event_id character varying NOT NULL,
+    request_timeout_event_id character varying,
     result_event_id character varying,
 
     CONSTRAINT worker_tasks_unique_request_event_id UNIQUE (request_event_id),
@@ -27,7 +27,6 @@ CREATE TABLE IF NOT EXISTS worker_tasks (
     FOREIGN KEY (worker_pubkey) REFERENCES workers (pubkey)
     ON DELETE CASCADE
 );
-
 
 CREATE TABLE IF NOT EXISTS online_proofs (
     id bigserial PRIMARY KEY,

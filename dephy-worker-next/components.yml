@@ -11,7 +11,7 @@ services:
     extra_hosts:
       host.docker.internal: host-gateway
 
-  archiver:
+  daemon:
     image: dephyio/dephy-worker-registry:next
     restart: always
     environment:
