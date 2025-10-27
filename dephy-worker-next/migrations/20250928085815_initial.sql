@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS workers (
     ping_loop_pinged boolean NOT NULL,
     "version" character varying NOT NULL,
     backend jsonb NOT NULL,
+    topic character varying NOT NULL,
 
     CONSTRAINT workers_unique_pubkey UNIQUE (pubkey)
 );
