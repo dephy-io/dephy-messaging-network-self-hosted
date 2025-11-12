@@ -6,39 +6,17 @@ services:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
       SENTRY_DSN: ${SENTRY_DSN}
-    entrypoint: "/usr/bin/dephy-worker-registry-api"
     ports:
       - "0.0.0.0:9000:9000"
-
-  poo-archiver:
-    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
-    restart: always
-    environment:
-      RUST_LOG: "info,dephy_worker_registry=debug"
-      RUST_BACKTRACE: "1"
-      SENTRY_DSN: ${SENTRY_DSN}
-    entrypoint: "/usr/bin/dephy-worker-registry-poo"
     extra_hosts:
       host.docker.internal: host-gateway
 
-  poo-pinger:
+  daemon:
     image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
     restart: always
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
       RUST_BACKTRACE: "1"
       SENTRY_DSN: ${SENTRY_DSN}
-    entrypoint: "/usr/bin/dephy-worker-registry-poo"
-    extra_hosts:
-      host.docker.internal: host-gateway
-
-  poo-checker:
-    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
-    restart: always
-    environment:
-      RUST_LOG: "info,dephy_worker_registry=debug"
-      RUST_BACKTRACE: "1"
-      SENTRY_DSN: ${SENTRY_DSN}
-    entrypoint: "/usr/bin/dephy-worker-registry-poo"
     extra_hosts:
       host.docker.internal: host-gateway
