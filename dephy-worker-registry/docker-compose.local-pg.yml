@@ -8,14 +8,35 @@ services:
       POSTGRES_DB: dephy_worker_registry
     volumes:
       - postgresql_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "pg_isready -U dephy -d dephy_messaging_network"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migration:
+    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
+    restart: on-failure
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      RUST_LOG: ${RUST_LOG:-info}
+    command: >
+      migrate_db
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
 
   api:
     extends:
       file: components.yml
       service: api
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     command: >
       serve
       --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
@@ -29,7 +50,10 @@ services:
       file: components.yml
       service: daemon
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     command: >
       archive
       --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
@@ -41,7 +65,10 @@ services:
       file: components.yml
       service: daemon
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     command: >
       ping
       --forever
@@ -54,7 +81,10 @@ services:
       file: components.yml
       service: daemon
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     command: >
       check_ping
       --forever

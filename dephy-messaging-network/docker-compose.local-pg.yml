@@ -12,13 +12,20 @@ services:
     volumes:
       - ${POSTGRESQL_CONFIG_FILE:-./postgresql.conf}:/etc/postgresql/postgresql.conf
       - postgresql_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "pg_isready -U dephy -d dephy_messaging_network"
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   pgbouncer:
     image: bitnamilegacy/pgbouncer:1.24.0
     restart: always
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
     environment:
       POSTGRESQL_HOST: postgresql
       POSTGRESQL_USERNAME: dephy
@@ -31,13 +38,37 @@ services:
       PGBOUNCER_SERVER_IDLE_TIMEOUT: ${PGBOUNCER_SERVER_IDLE_TIMEOUT:-600}
       PGBOUNCER_SERVER_CONNECT_TIMEOUT: ${PGBOUNCER_SERVER_CONNECT_TIMEOUT:-15}
       PGBOUNCER_POOL_MODE: transaction
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "PGPASSWORD=dephy psql -h localhost -p 6432 -U dephy -d dephy_messaging_network -c 'SELECT 1' || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migration:
+    image: dephyio/dephy-messaging-network:${DEPHY_IMAGE_TAG:-latest}
+    restart: on-failure
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      RUST_LOG: ${RUST_LOG:-info}
+    command: >
+      migrate_db
+      --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_messaging_network'
 
   dephy-messaging-network:
     extends:
       file: components.yml
       service: dephy-messaging-network
     depends_on:
-      - pgbouncer
+      postgresql:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     entrypoint: []
     command: >
       sh -c "
@@ -56,7 +87,12 @@ services:
       file: components.yml
       service: dephy-messaging-network-cleanup
     depends_on:
-      - pgbouncer
+      postgresql:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     command: >
       cleanup
       --pg-url 'postgresql://dephy:dephy@pgbouncer:6432/dephy_messaging_network'
@@ -66,7 +102,10 @@ services:
       file: components.yml
       service: prometheus-postgres-exporter
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     environment:
       DATA_SOURCE_URI: "postgresql:5432/dephy_messaging_network?sslmode=disable"
       DATA_SOURCE_USER: dephy
