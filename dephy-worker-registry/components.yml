@@ -1,6 +1,6 @@
 services:
   api:
-    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
+    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-v1.5.0}
     restart: always
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
@@ -11,7 +11,7 @@ services:
       - "0.0.0.0:9000:9000"
 
   poo-archiver:
-    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
+    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-v1.5.0}
     restart: always
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
@@ -22,7 +22,7 @@ services:
       host.docker.internal: host-gateway
 
   poo-pinger:
-    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
+    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-v1.5.0}
     restart: always
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
@@ -33,7 +33,7 @@ services:
       host.docker.internal: host-gateway
 
   poo-checker:
-    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-latest}
+    image: dephyio/dephy-worker-registry:${DEPHY_IMAGE_TAG:-v1.5.0}
     restart: always
     environment:
       RUST_LOG: "info,dephy_worker_registry=debug"
