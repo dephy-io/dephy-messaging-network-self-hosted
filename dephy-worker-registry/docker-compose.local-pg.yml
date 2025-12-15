@@ -40,7 +40,7 @@ services:
     command: >
       serve
       --pg-url 'postgresql://dephy:dephy@postgresql:5432/dephy_worker_registry'
-      --api-addr '0.0.0.0:9000'
+      --api-addr '0.0.0.0:9002'
       --nostr-relay "${DEPHY_WR_NOSTR_RELAY:-ws://host.docker.internal:8000}"
       --worker-nostr-relay "${DEPHY_WR_WORKER_NOSTR_RELAY:-ws://127.0.0.1:8000}"
       --key "${DEPHY_WR_KEY}"
